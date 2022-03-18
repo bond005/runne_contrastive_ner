@@ -1,4 +1,4 @@
-[![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/bond005/impartial_text_cls/blob/master/LICENSE)
+[![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/bond005/runne_contrastive_ner/blob/master/LICENSE)
 ![Python 3.7](https://img.shields.io/badge/python-3.7-green.svg)
 
 # RuNNE
