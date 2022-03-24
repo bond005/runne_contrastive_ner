@@ -41,7 +41,7 @@ python -m unittest
 
 If you want to reproduce my experiments, then you have to clone the RuNNE competition repository https://github.com/dialogue-evaluation/RuNNE. You can see all training data in the `public_data` folder of this repository. I used `train.jsonl` and `ners.txt` from this folder for training. Also, I used `test.jsonl` to prepare my submit for the final (test) phase of the competition. I did several steps to build my solution and to do submit, and you can reproduce these steps.
 
-####Step 1
+#### Step 1
 
 You need to split the source training data (for example, `train.jsonl`) into training and validation sub-sets:
 
@@ -54,7 +54,7 @@ python split_data.py \
 
 The first argument of the `split_data.py` script is a source training file, and other arguments are names of the resulted files for training and validation sub-sets.
 
-####Step 2
+#### Step 2
 
 You need to prepare both your subsets (for training and for validation) as numpy matrices of indexed token sequence pairs and corresponding labels for the Transformer fine-tuning as Siamese neural network:
 
@@ -94,7 +94,7 @@ The **6th argument** `DeepPavlov/rubert-base-cased` is a name of pre-trained BER
 
 The **7th (last) argument** sets a target number of data samples in the dataset for Siamese NN. Full dataset for Siamese NN is built as the Cartesian square of a source dataset, and so such dataset size must be restricted to some reasonably value. In this example I set 100000 samples for the training set and 5000 samples for the validation set.
 
-####Step 3
+#### Step 3
 
 You need to train your Siamese Transformer using training and validation sets prepared on previous step:
 
@@ -121,7 +121,7 @@ The **6th argument** `DeepPavlov/rubert-base-cased` is a name of pre-trained BER
 
 The **7th argument** `from-pytorch` defines a source of the pretrained BERT binary model. Two values are  possible: `from-pytorch` and `from-tensorflow`. In this case, Deep Pavlov team prepared their BERT model using the PyTorch framework, therefore I set `from-pytorch` value.
 
-####Step 4
+#### Step 4
 
 You need to prepare both your subsets (for training and for validation) as numpy matrices of indexed token sequences for the second stage of fine-tuning, i.e. final training of BERT as NER:
 
@@ -149,7 +149,7 @@ python prepare_trainset.py \
 
 The arguments are similar to described ones on step 2, but I use the `ner` mode instead of the `siamese`, and I don't specify a maximal number of data samples.
 
-####Step 5
+#### Step 5
 
 You have to do the second stage of fine-tuning, i.e. to train your named entity recognizer:
 
@@ -173,7 +173,7 @@ This is a very similar to the step 3, but there are some differences:
 
 All components of the fine-tuned NER after this step will be saved into the specified folder `path/to/your/trained/model/runne_ner`.
 
-####Step 6.
+#### Step 6.
 
 This is a final step to recognize and prepare the submission:
 
