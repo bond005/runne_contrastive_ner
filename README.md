@@ -37,9 +37,13 @@ python -m unittest
 
 ## Usage
 
+### Reproducibility
+
 If you want to reproduce my experiments, then you have to clone the RuNNE competition repository https://github.com/dialogue-evaluation/RuNNE. You can see all training data in the `public_data` folder of this repository. I used `train.jsonl` and `ners.txt` from this folder for training. Also, I used `test.jsonl` to prepare my submit for the final (test) phase of the competition. I did several steps to build my solution and to do submit, and you can reproduce these steps.
 
-**Step 1.** You need to split the source training data (for example, `train.jsonl`) into training and validation sub-sets:
+####Step 1
+
+You need to split the source training data (for example, `train.jsonl`) into training and validation sub-sets:
 
 ```shell
 python split_data.py \
@@ -50,7 +54,9 @@ python split_data.py \
 
 The first argument of the `split_data.py` script is a source training file, and other arguments are names of the resulted files for training and validation sub-sets.
 
-**Step 2.** You need to prepare both your subsets (for training and for validation) as numpy matrices of indexed token sequence pairs and corresponding labels for the Transformer fine-tuning as Siamese neural network:
+####Step 2
+
+You need to prepare both your subsets (for training and for validation) as numpy matrices of indexed token sequence pairs and corresponding labels for the Transformer fine-tuning as Siamese neural network:
 
 ```shell
 python prepare_trainset.py \
@@ -76,19 +82,21 @@ python prepare_trainset.py \
     5000
 ```
 
-The first and second arguments are names of the source and the resulted files with dataset.
+The **1st** and **2nd arguments** are names of the source and the resulted files with dataset.
 
-The third argument is a named entity type vocabulary `ners.txt`, prepared by competition organizers.
+The **3rd argument** is a named entity type vocabulary `ners.txt`, prepared by competition organizers.
 
-The fourth argument `siamese` specifies a type of neural network for which this dataset is created. As I wrote earlier, the first-stage fine-tuning is based on training of the Transformer as the Siamese neural network.
+The **4th argument** `siamese` specifies a type of neural network for which this dataset is created. As I wrote earlier, the first-stage fine-tuning is based on training of the Transformer as the Siamese neural network.
 
-The fifth argument `128` is a maximal number of sub-words in the input phrase. You can set any another value, but it must be not greater than 512.
+The **5th argument** `128` is a maximal number of sub-words in the input phrase. You can set any another value, but it must be not greater than 512.
 
-The sixth argument `DeepPavlov/rubert-base-cased` is a name of pre-trained BERT model. In this example the [DeepPavlov's RuBERT](https://huggingface.co/DeepPavlov/rubert-base-cased) is used, but in practice I worked with [base](https://huggingface.co/sberbank-ai/ruBert-base) and [large](https://huggingface.co/sberbank-ai/ruBert-large) BERTs from [SberAI](https://huggingface.co/sberbank-ai) during the  competition.
+The **6th argument** `DeepPavlov/rubert-base-cased` is a name of pre-trained BERT model. In this example the [DeepPavlov's RuBERT](https://huggingface.co/DeepPavlov/rubert-base-cased) is used, but I also checked other pre-trained BERTs, such as [base](https://huggingface.co/sberbank-ai/ruBert-base) and [large](https://huggingface.co/sberbank-ai/ruBert-large) BERTs from [SberAI](https://huggingface.co/sberbank-ai) during the competition.
 
-The seventh (last) argument sets a target number of data samples in the dataset for Siamese NN. Full dataset for Siamese NN is built as the Cartesian square of a source dataset, and so such dataset size must be restricted to some reasonably value. In this example I set 100000 samples for the training set and 5000 samples for the validation set.
+The **7th (last) argument** sets a target number of data samples in the dataset for Siamese NN. Full dataset for Siamese NN is built as the Cartesian square of a source dataset, and so such dataset size must be restricted to some reasonably value. In this example I set 100000 samples for the training set and 5000 samples for the validation set.
 
-**Step 3.** You need to train your Siamese Transformer using training and validation sets prepared on previous step:
+####Step 3
+
+You need to train your Siamese Transformer using training and validation sets prepared on previous step:
 
 ```shell
 python train.py \
@@ -101,19 +109,21 @@ python train.py \
     from-pytorch
 ```
 
-The first and second arguments are names of datasets for training and validation which were prepared on previous step.
+The **1st** and **2nd arguments** are names of datasets for training and validation which were prepared on previous step.
 
-The third argument is path to the folder into which all files of the BERT after Siamese fine-tuning will be saved. Usually, there will be three files: `config.json`, `tf_model.h5` and `vocab.txt`. But some other files such as `tokenizer_config.json` and so on can be appeared in this folder.
+The **3rd argument** is path to the folder into which all files of the BERT after Siamese fine-tuning will be saved. Usually, there will be three files: `config.json`, `tf_model.h5` and `vocab.txt`. But some other files such as `tokenizer_config.json` and so on can be appeared in this folder.
 
-The fourth argument `siamese` specifies a type of neural network for which this dataset is created. As I wrote earlier, the first-stage fine-tuning is based on training of the Transformer as the Siamese neural network.
+The **4th argument** `siamese` specifies a type of neural network for which this dataset is created. As I wrote earlier, the first-stage fine-tuning is based on training of the Transformer as the Siamese neural network.
 
-The fifth argument `16` is a mini-batch size. You can set any positive integer value, but a very large mini-batch can be brought to out-of-memory on your GPU.
+The **5th argument** `16` is a mini-batch size. You can set any positive integer value, but a very large mini-batch can be brought to out-of-memory on your GPU.
 
-The sixth argument `DeepPavlov/rubert-base-cased` is a name of pre-trained BERT model. In this example the [DeepPavlov's RuBERT](https://huggingface.co/DeepPavlov/rubert-base-cased) is used, but in practice I worked with [base](https://huggingface.co/sberbank-ai/ruBert-base) and [large](https://huggingface.co/sberbank-ai/ruBert-large) BERTs from [SberAI](https://huggingface.co/sberbank-ai) during the  competition.
+The **6th argument** `DeepPavlov/rubert-base-cased` is a name of pre-trained BERT model. In this example the [DeepPavlov's RuBERT](https://huggingface.co/DeepPavlov/rubert-base-cased) is used, but in practice I worked with [base](https://huggingface.co/sberbank-ai/ruBert-base) and [large](https://huggingface.co/sberbank-ai/ruBert-large) BERTs from [SberAI](https://huggingface.co/sberbank-ai) during the  competition.
 
-The seventh argument `from-pytorch` defines a source of the pretrained BERT binary model. Two values are  possible: `from-pytorch` and `from-tensorflow`. In this case, Deep Pavlov team prepared their BERT model using the PyTorch framework, therefore I set `from-pytorch` value.
+The **7th argument** `from-pytorch` defines a source of the pretrained BERT binary model. Two values are  possible: `from-pytorch` and `from-tensorflow`. In this case, Deep Pavlov team prepared their BERT model using the PyTorch framework, therefore I set `from-pytorch` value.
 
-**Step 4.** You need to prepare both your subsets (for training and for validation) as numpy matrices of indexed token sequences for the second stage of fine-tuning, i.e. final training of BERT as NER:
+####Step 4
+
+You need to prepare both your subsets (for training and for validation) as numpy matrices of indexed token sequences for the second stage of fine-tuning, i.e. final training of BERT as NER:
 
 ```shell
 python prepare_trainset.py \
@@ -139,7 +149,9 @@ python prepare_trainset.py \
 
 The arguments are similar to described ones on step 2, but I use the `ner` mode instead of the `siamese`, and I don't specify a maximal number of data samples.
 
-**Step 5.** You have to do the second stage of fine-tuning, i.e. to train your named entity recognizer:
+####Step 5
+
+You have to do the second stage of fine-tuning, i.e. to train your named entity recognizer:
 
 ```shell
 python train.py \
@@ -161,7 +173,9 @@ This is a very similar to the step 3, but there are some differences:
 
 All components of the fine-tuned NER after this step will be saved into the specified folder `path/to/your/trained/model/runne_ner`.
 
-**Step 6.** This is a final step to recognize and prepare the submission:
+####Step 6.
+
+This is a final step to recognize and prepare the submission:
 
 ```shell
 python recognize.py \
@@ -172,13 +186,100 @@ python recognize.py \
 
 The prepared submission will be written into the file `/path/to/your/submit/for/competition/test.jsonl`. The submission file format will correspond to the competition rules.
 
+### Docker and REST-API
+
+You can apply the trained model of this NER for your tasks as a Docker-bases microservice. Interaction with the microservice is implemented using REST API. Firstly, you need to build the Docker image:
+
+```shell
+docker build -t ivanbondarenko/runne_contrastive_ner:0.1 .
+```
+
+After that you have to run this image:
+
+```shell
+docker run -p 127.0.0.1:8010:8010 ivanbondarenko/runne_contrastive_ner:0.1
+```
+
+As a result, the microservice will be ready to interaction. You can send a single text, a text list or a special dictionary list. Further I describe an example of interaction between the NER microservice and a simple Python client.
+
+At first, you can check a status of the run microservice:
+
+```python
+>>> import requests
+>>> resp = requests.get('http://localhost:8010/ready')  # check the microservice status
+>>> print(resp.status_code)  # print the status (if it equals to 200, then all right)
+200
+```
+
+Then you can generate queries to recognize named entities in your data. For example, you can send a single text only:
+
+```python
+>>> simple_text = "Главным борцом с пробками назначен заместитель министра транспорта России Николай Лямов."
+>>> resp = requests.post('http://localhost:8010/recognize', json=simple_text)
+>>> print(resp.status_code)
+200
+>>> data = resp.json()
+>>> for cur_key in data: print(cur_key, data[cur_key])
+...
+ners [[67, 73, 'COUNTRY'], [74, 87, 'PERSON'], [35, 73, 'PROFESSION']]
+text Главным борцом с пробками назначен заместитель министра транспорта России Николай Лямов.
+```
+
+Also, you can send a list of multiple texts:
+
+```python
+>>> some_text_list = [ \
+    "Главным борцом с пробками назначен заместитель министра транспорта России Николай Лямов.", \
+    "Другим новичком в правительстве столицы стал новый заместитель Сергея Собянина по взаимодействию со СМИ - 48-летний генеральный директор Российской газеты Александр Горбенко." \
+]
+>>> resp = requests.post('http://localhost:8010/recognize', json=some_text_list)
+>>> print(resp.status_code)
+200
+>>> data = resp.json()
+>>> for it in data: print(it['text'], '\n', it['ners'], '\n')
+...
+Главным борцом с пробками назначен заместитель министра транспорта России Николай Лямов.
+ [[67, 73, 'COUNTRY'], [74, 87, 'PERSON'], [35, 73, 'PROFESSION']]
+
+Другим новичком в правительстве столицы стал новый заместитель Сергея Собянина по взаимодействию со СМИ - 48-летний генеральный директор Российской газеты Александр Горбенко.
+ [[106, 115, 'AGE'], [137, 147, 'COUNTRY'], [18, 39, 'ORGANIZATION'], [137, 154, 'ORGANIZATION'], [63, 78, 'PERSON'], [155, 173, 'PERSON'], [51, 103, 'PROFESSION'], [116, 154, 'PROFESSION']]
+```
+
+At last, you can send a list of special dictionaries, each of them describes a single text (the "text" key in the dictionary) with some additional attributes. All of these attributes will be saved in the response, and the "ners" key will be added:
+
+```python
+>>> some_data = [
+    {"id": 1, "text": "Главным борцом с пробками назначен заместитель министра транспорта России Николай Лямов."},
+    {"id": 2, "additional": "some", "text": "Другим новичком в правительстве столицы стал новый заместитель Сергея Собянина по взаимодействию со СМИ - 48-летний генеральный директор Российской газеты Александр Горбенко."} \
+]
+>>> resp = requests.post('http://localhost:8010/recognize', json=some_data)
+>>> print(resp.status_code)
+200
+>>> data = resp.json()
+>>> for it in data: print('\n'.join([f'{cur}: {it[cur]}' for cur in it.keys()]), '\n')
+...
+id: 1
+ners: [[67, 73, 'COUNTRY'], [74, 87, 'PERSON'], [35, 73, 'PROFESSION']]
+text: Главным борцом с пробками назначен заместитель министра транспорта России Николай Лямов.
+
+additional: some
+id: 2
+ners: [[106, 115, 'AGE'], [137, 147, 'COUNTRY'], [18, 39, 'ORGANIZATION'], [137, 154, 'ORGANIZATION'], [63, 78, 'PERSON'], [155, 173, 'PERSON'], [51, 103, 'PROFESSION'], [116, 154, 'PROFESSION']]
+text: Другим новичком в правительстве столицы стал новый заместитель Сергея Собянина по взаимодействию со СМИ - 48-летний генеральный директор Российской газеты Александр Горбенко.
+```
+
+Each recognized named entity is described as a tuple of three elements:
+
+- the entity first character index in the analyzed text;
+- index of the character following the entity last character in the analyzed text;
+- the class name of this entity.
+
 ## Roadmap
 
-1. The docker container with the final NER will be added into this repository in the future, and you can interact with it using the REST API.
+1. The research paper with the detailed description of the project key ideas will be added.
 
-2. The research paper with the detailed description of the project key ideas will be added.
+2. The model quality will be improved using more sophisticated hierarchical multitask learning.
 
-3. The model quality will be improved using more sophisticated hierarchical multitask learning.
 ## Contact
 
 Ivan Bondarenko - [@Bond_005](https://t.me/Bond_005) - [bond005@yandex.ru](mailto:bond005@yandex.ru)

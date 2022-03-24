@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+CACHE_FLAG='--no-cache'
+DOCKERFILE='Dockerfile'
+IMAGE_TAG='ivanbondarenko/runne_contrastive_ner'
+
+readonly CACHE_FLAG
+readonly DOCKERFILE
+readonly IMAGE_TAG
+
+set -x
+docker build --rm --pull $CACHE_FLAG -t "$IMAGE_TAG" -f "$DOCKERFILE" .
+
