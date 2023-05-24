@@ -1,5 +1,5 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/bond005/runne_contrastive_ner/blob/master/LICENSE)
-![Python 3.7](https://img.shields.io/badge/python-3.7-green.svg)
+![Python 3.9](https://img.shields.io/badge/python-3.9-green.svg)
 
 # RuNNE
 
@@ -7,7 +7,7 @@ This project is concerned with my participating in the **RuNNE** competition (**
 
 The RuNNE competition is devoted to a special variant of the well-known [named entity recognition](https://en.wikipedia.org/wiki/Named-entity_recognition) problem: nested named entities, i.e. one named entity can be a part of another one. For example, the phrase "_Donetsk National Technical University_" contains the named entity of ORGANIZATION type, but the subphrase "_Donetsk_" in the abovementioned phrase is the named entity of LOCATION type at the same time.
 
-My solution is the third in the main track of the RuNNE competition. You can see the final results (including my result as the **bond005** user in the **SibNN** team) on this webpage https://codalab.lisn.upsaclay.fr/competitions/1863#results. 
+My solution is the third in the main track of the RuNNE competition. You can see the final results (including my result as the **bond005** user in the **SibNN** team) on this webpage https://codalab.lisn.upsaclay.fr/competitions/1863#results. Also, you can read the paper "Contrastive fine-tuning to improve generalization in deep NER" with DOI [10.28995/2075-7182-2022-21-70-80](https://www.dialog-21.ru/media/5751/bondarenkoi113.pdf), devoted to this solution.
 
 I propose a special two-stage fine-tuning of a pretrained [Transformer neural network](https://deepai.org/machine-learning-glossary-and-terms/transformer-neural-network).
 
@@ -19,12 +19,12 @@ The key motivation of the described two-stage fine-tuning is increasing of robus
 
 ## Installation
 
-This project uses a deep learning, therefore a key dependency is a deep learning framework. I prefer [Tensorflow](https://www.tensorflow.org), and you need to install CPU- or GPU-based build of Tensorflow ver. 2.5.0 or later. You can see more detailed description of dependencies in the `requirements.txt`.
+This project uses a deep learning, therefore a key dependency is a deep learning framework. I prefer [Tensorflow](https://www.tensorflow.org), and you need to install CPU- or GPU-based build of Tensorflow ver. 2.5.0 or later. You can see more detailed description of dependencies in the `requirements.txt`. But if you want to install exactly the GPU-based build of this library, then before installing all dependencies from the `requirements.txt`, you need to install tensorflow for GPU manually according to the rules described here: https://www.tensorflow.org/install/pip.
 
-Also, for installation you need to Python 3.7. I recommend using a new [Python virtual environment](https://docs.python.org/3/glossary.html#term-virtual-environment) witch can be created with [Anaconda](https://www.anaconda.com) or [venv](https://docs.python.org/3/library/venv.html#module-venv). To install this project in the selected virtual environment, you should activate this environment and run the following commands in the Terminal:
+Also, for installation you need to Python 3.9. I recommend using a new [Python virtual environment](https://docs.python.org/3/glossary.html#term-virtual-environment) witch can be created with [Anaconda](https://www.anaconda.com) or [venv](https://docs.python.org/3/library/venv.html#module-venv). To install this project in the selected virtual environment, you should activate this environment and run the following commands in the Terminal:
 
 ```shell
-git clone https://github.com/bond005/runne.git
+git clone https://github.com/bond005/runne_contrastive_ner.git
 cd runne
 python -m pip install -r requirements.txt
 ```
@@ -191,13 +191,19 @@ The prepared submission will be written into the file `/path/to/your/submit/for/
 You can apply the trained model of this NER for your tasks as a Docker-bases microservice. Interaction with the microservice is implemented using REST API. Firstly, you need to build the Docker image:
 
 ```shell
-docker build -t ivanbondarenko/runne_contrastive_ner:0.1 .
+docker build -t bond005/runne_contrastive_ner:0.1 .
 ```
 
-After that you have to run this image:
+But the easiest way is to download the built image from Docker-Hub:
 
 ```shell
-docker run -p 127.0.0.1:8010:8010 ivanbondarenko/runne_contrastive_ner:0.1
+docker pull bond005/runne_contrastive_ner:0.1
+```
+
+After building (or pulling) you have to run this docker container:
+
+```shell
+docker run -p 127.0.0.1:8010:8010 bond005/runne_contrastive_ner:0.1
 ```
 
 As a result, the microservice will be ready to interaction. You can send a single text, a text list or a special dictionary list. Further I describe an example of interaction between the NER microservice and a simple Python client.
@@ -276,9 +282,24 @@ Each recognized named entity is described as a tuple of three elements:
 
 ## Roadmap
 
-1. The research paper with the detailed description of the project key ideas will be added.
+1. The algorithm recognizes nested entities of different entity classes, but it does not recognize nested entities of same entity class. For example, the phrase "*Центральный комитет Коммунистического союза молодёжи Китая*" (in English, "*the Central Committee of the Communist Youth League of China*") describes the organization, and also it contains three nested organizations too - they are nested entities of same entity class. Therefore, recognition of nested entities of the same class will be implemented (for example, using a special syntactical-based postprocessing).
 
 2. The model quality will be improved using more sophisticated hierarchical multitask learning.
+
+## Citation
+
+If you want to cite this project you can use this:
+
+```text
+@article{bondarenko2022coner,
+  title   = {Contrastive fine-tuning to improve generalization in deep NER},
+  author  = {Bondarenko, Ivan},
+  doi     = {10.28995/2075-7182-2022-21-70-80},
+  journal = {Komp'juternaja Lingvistika i Intellektual'nye Tehnologii},
+  volume  = {21},
+  year    = {2022}
+}
+```
 
 ## Contact
 

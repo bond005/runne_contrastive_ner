@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.9
 MAINTAINER Ivan Bondarenko <i.bondarenko@g.nsu.ru>
 
 RUN apt-get update && \
