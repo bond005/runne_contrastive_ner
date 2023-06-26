@@ -122,19 +122,9 @@ def main():
 
     with open(training_fname, 'rb') as fp:
         training_data = pickle.load(fp)
-    print('')
-    print(f'training_data[0].shape = {training_data[0].shape}')
-    for idx in range(len(training_data[1])):
-        print(f'training_data[1][{idx}].shape = {training_data[1][idx].shape}')
-    print('')
 
     with open(validation_fname, 'rb') as fp:
         validation_data = pickle.load(fp)
-    print(f'validation_data[0].shape = {validation_data[0].shape}')
-    for idx in range(len(validation_data[1])):
-        print(f'validation_data[1][{idx}].shape = '
-              f'{validation_data[1][idx].shape}')
-    print('')
 
     if training_mode == 'ner':
         trained_model, base_transformer = build_ner(
@@ -163,11 +153,23 @@ def main():
         callbacks = [
             NamedEntityEarlyStopping(verbose=True, patience=5)
         ]
+        training_set = tf.data.Dataset.from_tensor_slices(
+            (
+                training_data[0],
+                tuple(training_data[1])
+            )
+        ).shuffle(training_data[0].shape[0]).batch(minibatch_size)
+        validation_set = tf.data.Dataset.from_tensor_slices(
+            (
+                validation_data[0],
+                tuple(validation_data[1])
+            )
+        ).batch(minibatch_size)
     else:
         trained_model, base_transformer = build_siamese_nn(
             bert_name=pretrained_model,
             from_pytorch=from_pytorch,
-            max_seq_len=training_data[0].shape[1],
+            max_seq_len=training_data[1].shape[1],
             learning_rate=1e-6,
             base_name=f'RuNNE_siamese_seed{random_seed}'
         )
@@ -178,6 +180,18 @@ def main():
                 patience=5, restore_best_weights=True, verbose=True
             )
         ]
+        training_set = tf.data.Dataset.from_tensor_slices(
+            (
+                training_data[0],
+                training_data[1]
+            )
+        ).shuffle(training_data[1].shape[0]).batch(minibatch_size)
+        validation_set = tf.data.Dataset.from_tensor_slices(
+            (
+                validation_data[0],
+                validation_data[1]
+            )
+        ).batch(minibatch_size)
     trained_model.summary()
 
     if os.path.isdir(log_name):
@@ -192,18 +206,6 @@ def main():
         ),
         tf.keras.callbacks.TensorBoard(log_dir=log_name)
     ]
-    training_set = tf.data.Dataset.from_tensor_slices(
-        (
-            training_data[0],
-            tuple(training_data[1])
-        )
-    ).shuffle(training_data[0].shape[0]).batch(minibatch_size)
-    validation_set = tf.data.Dataset.from_tensor_slices(
-        (
-            validation_data[0],
-            tuple(validation_data[1])
-        )
-    ).batch(minibatch_size)
     trained_model.fit(training_set, validation_data=validation_set,
                       epochs=1000, callbacks=callbacks, verbose=2)
     trained_model.save_weights(model_name)
