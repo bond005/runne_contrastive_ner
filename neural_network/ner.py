@@ -421,7 +421,7 @@ def load_ner(path: str) -> Tuple[tf.keras.Model, BertTokenizer, int, List[str]]:
                   f'Expected {type("123")}, ' \
                   f'got {type(config_data["base_name"])}'
         raise ValueError(err_msg)
-    re_for_name = re.compile(f'^[a-zA-Z]+[_a-zA-Z]*[a-zA-Z]+$')
+    re_for_name = re.compile(f'^[a-zA-Z]+[_a-zA-Z]*[a-zA-Z]+\d*$')
     if re_for_name.search(config_data["base_name"]) is None:
         err_msg = f'{config_data["base_name"]} is a wrong name for ' \
                   f'Tensorflow models and layers!'
